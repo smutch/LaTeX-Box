@@ -138,12 +138,18 @@ function! s:FindMatchingPair(mode)
 endfunction
 
 " disable matchparen autocommands
-augroup LatexBox_HighlightPairs
-	autocmd BufEnter * if !exists("g:loaded_matchparen") || !g:loaded_matchparen | runtime plugin/matchparen.vim | endif
-	autocmd BufEnter *.tex 3match none | unlet! g:loaded_matchparen | au! matchparen
-	autocmd! CursorMoved *.tex call s:FindMatchingPair('h')
-	autocmd! CursorMovedI *.tex call s:FindMatchingPair('i')
-augroup END
+if g:LatexBox_enable_matchparen == 1
+	augroup LatexBox_HighlightPairs
+		autocmd BufEnter * if !exists("g:loaded_matchparen") || !g:loaded_matchparen | runtime plugin/matchparen.vim | endif
+		autocmd BufEnter *.tex 3match none | unlet! g:loaded_matchparen | au! matchparen
+		autocmd! CursorMoved *.tex call s:FindMatchingPair('h')
+		autocmd! CursorMovedI *.tex call s:FindMatchingPair('i')
+	augroup END
+else
+	if exists("g:loaded_matchparen") 
+		:NoMatchParen
+	endif
+endif
 
 nnoremap <silent> <Plug>LatexBox_JumpToMatch		:call <SID>FindMatchingPair('n')<CR>
 vnoremap <silent> <Plug>LatexBox_JumpToMatch		:call <SID>FindMatchingPair('v')<CR>
