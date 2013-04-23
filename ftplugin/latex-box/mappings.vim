@@ -3,12 +3,6 @@
 if exists("g:LatexBox_no_mappings")
 	finish
 endif
-if !exists('g:LatexBox_open_pats')
-	let g:LatexBox_open_pats  = [ '\\{','{','\\(','(','\\\[','\[',
-				\ '\\begin\s*{.\{-}}', '\\left\s*\%([^\\]\|\\.\|\\\a*\)']
-	let g:LatexBox_close_pats = [ '\\}','}','\\)',')','\\\]','\]',
-				\ '\\end\s*{.\{-}}',   '\\right\s*\%([^\\]\|\\.\|\\\a*\)']
-endif
 
 " latexmk {{{
 map <buffer> <LocalLeader>ll :Latexmk<CR>
@@ -26,14 +20,18 @@ map <buffer> <LocalLeader>lv :LatexView<CR>
 " }}}
 
 " TOC {{{
-command! LatexTOC call LatexBox_TOC()
 map <silent> <buffer> <LocalLeader>lt :LatexTOC<CR>
 " }}}
 
-"Jump to match {{{
-nmap <buffer> % <Plug>LatexBox_JumpToMatch
-vmap <buffer> % <Plug>LatexBox_JumpToMatch
-omap <buffer> % <Plug>LatexBox_JumpToMatch
+" Jump to match {{{
+if !exists('g:LatexBox_loaded_matchparen')
+	nmap <buffer> % <Plug>LatexBox_JumpToMatch
+	vmap <buffer> % <Plug>LatexBox_JumpToMatch
+	omap <buffer> % <Plug>LatexBox_JumpToMatch
+endif
+" }}}
+
+" Define text objects {{{
 vmap <buffer> ie <Plug>LatexBox_SelectCurrentEnvInner
 vmap <buffer> ae <Plug>LatexBox_SelectCurrentEnvOuter
 omap <buffer> ie :normal vie<CR>
@@ -44,5 +42,9 @@ omap <buffer> i$ :normal vi$<CR>
 omap <buffer> a$ :normal va$<CR>
 " }}}
 
+" Jump between sections {{{
+noremap <silent> ]] /\s*\\\(\(sub\)*section\\|chapter\)<cr>
+noremap <silent> [[ ?\s*\\\(\(sub\)*section\\|chapter\)<cr>
+" }}}
 
 " vim:fdm=marker:ff=unix:noet:ts=4:sw=4
