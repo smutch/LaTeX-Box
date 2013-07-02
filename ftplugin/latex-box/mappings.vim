@@ -43,8 +43,54 @@ omap <buffer> a$ :normal va$<CR>
 " }}}
 
 " Jump between sections {{{
-noremap <silent> ]] /\s*\\\(\(sub\)*section\\|chapter\)<cr>
-noremap <silent> [[ ?\s*\\\(\(sub\)*section\\|chapter\)<cr>
+function! s:LatexBoxNextSection(type, backwards, visual)
+	" Restore visual mode if desired
+	if a:visual
+		normal! gv
+	endif
+
+	" For the [] and ][ commands we move up or down before the search
+	if a:type == 1
+		if a:backwards
+			normal! k
+		else
+			normal! j
+		endif
+	endif
+
+	" Define search pattern and do the search while preserving "/
+	let save_search = @/
+	let flags = 'W'
+	if a:backwards
+		let flags = 'b' . flags
+	endif
+	let notcomment = '\%(\%(\\\@<!\%(\\\\\)*\)\@<=%.*\)\@<!'
+	let pattern = notcomment . '\v\s*\\(' . join([
+				\ '(sub)*section',
+				\ 'chapter',
+				\ 'part',
+				\ 'appendix',
+				\ '(front|back|main)matter'], '|') . ')>'
+	call search(pattern, flags)
+	let @/ = save_search
+
+	" For the [] and ][ commands we move down or up after the search
+	if a:type == 1
+		if a:backwards
+			normal! j
+		else
+			normal! k
+		endif
+	endif
+endfunction
+noremap  <buffer> <silent> ]] :call <SID>LatexBoxNextSection(0,0,0)<CR>
+noremap  <buffer> <silent> ][ :call <SID>LatexBoxNextSection(1,0,0)<CR>
+noremap  <buffer> <silent> [] :call <SID>LatexBoxNextSection(1,1,0)<CR>
+noremap  <buffer> <silent> [[ :call <SID>LatexBoxNextSection(0,1,0)<CR>
+vnoremap <buffer> <silent> ]] :<c-u>call <SID>LatexBoxNextSection(0,0,1)<CR>
+vnoremap <buffer> <silent> ][ :<c-u>call <SID>LatexBoxNextSection(1,0,1)<CR>
+vnoremap <buffer> <silent> [] :<c-u>call <SID>LatexBoxNextSection(1,1,1)<CR>
+vnoremap <buffer> <silent> [[ :<c-u>call <SID>LatexBoxNextSection(0,1,1)<CR>
 " }}}
 
 " vim:fdm=marker:ff=unix:noet:ts=4:sw=4

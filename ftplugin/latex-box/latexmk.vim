@@ -119,8 +119,9 @@ function! LatexBox_Latexmk(force)
 	endif
 
 	" latexmk command
+	let mainfile = fnamemodify(LatexBox_GetMainTexFile(), ':t')
 	let cmd = 'cd ' . shellescape(LatexBox_GetTexRoot()) . ' ; ' . l:env .
-				\ ' latexmk ' . l:options	. ' ' . shellescape(LatexBox_GetMainTexFile())
+				\ ' latexmk ' . l:options	. ' ' . mainfile
 
 	" callback after latexmk is finished
 	let vimcmd = g:vim_program . ' --servername ' . v:servername . ' --remote-expr ' .
@@ -181,9 +182,11 @@ endfunction
 
 " kill_all_latexmk {{{
 function! s:kill_all_latexmk()
-	for gpid in values(b:latexmk_running_pids)
-		call s:kill_latexmk(gpid)
-	endfor
+	if exists('b:latexmk_running_pids')
+		for gpid in values(b:latexmk_running_pids)
+			call s:kill_latexmk(gpid)
+		endfor
+	endif
 	let b:latexmk_running_pids = {}
 endfunction
 " }}}
@@ -263,6 +266,9 @@ function! LatexBox_LatexErrors(status, ...)
 	if g:LatexBox_quickfix
 		ccl
 		cw
+		if g:LatexBox_quickfix==2
+			wincmd p
+		endif
 	endif
 
 	if a:status
@@ -279,9 +285,9 @@ command! -bang	Latexmk				call LatexBox_Latexmk(<q-bang> == "!")
 command! -bang	LatexmkClean		call LatexBox_LatexmkClean(<q-bang> == "!")
 command! -bang	LatexmkStatus		call LatexBox_LatexmkStatus(<q-bang> == "!")
 command! LatexmkStop			call LatexBox_LatexmkStop()
-command! LatexErrors			call LatexBox_LatexErrors(1)
+command! LatexErrors			call LatexBox_LatexErrors(0)
 " }}}
 
-autocmd VimLeavePre * call <SID>kill_all_latexmk()
+autocmd BufUnload <buffer> call <SID>kill_all_latexmk()
 
 " vim:fdm=marker:ff=unix:noet:ts=4:sw=4
