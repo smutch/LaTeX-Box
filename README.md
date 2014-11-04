@@ -36,8 +36,8 @@ plugins, see:
 ### With gmarik vundle
 _https://github.com/gmarik/vundle_
 
-Add `Bundle 'LaTeX-Box-Team/LaTeX-Box'` to your ~/.vimrc and run
-`:BundleInstall` in a vim buffer. Add `!` to the command to update.
+Add `Plugin 'LaTeX-Box-Team/LaTeX-Box'` to your ~/.vimrc and run
+`:PluginInstall` in a vim buffer. Add `!` to the command to update.
 
 ### With pathogen
 _https://github.com/tpope/vim-pathogen_
@@ -51,6 +51,11 @@ clone`.  This will typically be enough:
 ### Without a plugin manager
 
 Copy the directories to your `.vim/` folder.
+
+### Windows users
+
+Users working with (g)vim on Windows must have a Perl environment installed.
+Such an environment can be downloaded at : http://strawberryperl.com/
 
 ## Mirror information
 
